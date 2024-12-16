@@ -5,7 +5,7 @@ from tkinter import messagebox, filedialog
 
 def install_program(install_dir):
     # Путь к папке, где находится ваша программа
-    source_dir = 'app'
+    source_dir = 'YadroLaun.zip'
 
     try:
         # Создаем директорию для установки, если она не существует
@@ -51,7 +51,7 @@ def select_install_directory():
 
 def main():
     root = tk.Tk()
-    root.title("Установщик MyProgram")
+    root.title("Установщик Yadro")
     root.geometry("300x150")
 
     label = tk.Label(root, text="Нажмите кнопку для установки программы:")
