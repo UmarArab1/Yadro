@@ -1,0 +1,66 @@
+import os
+import shutil
+import tkinter as tk
+from tkinter import messagebox, filedialog
+
+def install_program(install_dir):
+    # Путь к папке, где находится ваша программа
+    source_dir = 'app'
+
+    try:
+        # Создаем директорию для установки, если она не существует
+        os.makedirs(install_dir, exist_ok=True)
+
+        # Копируем файлы из папки app в папку установки
+        for item in os.listdir(source_dir):
+            s = os.path.join(source_dir, item)
+            d = os.path.join(install_dir, item)
+            if os.path.isdir(s):
+                shutil.copytree(s, d, False, None)
+            else:
+                shutil.copy2(s, d)
+
+        # Создаем ярлык на рабочем столе
+        create_shortcut(install_dir)
+
+        messagebox.showinfo("Установка завершена", "Программа успешно установлена!")
+    except Exception as e:
+        messagebox.showerror("Ошибка", f"Не удалось установить программу: {e}")
+
+def create_shortcut(install_dir):
+    # Создаем ярлык на рабочем столе
+    desktop = os.path.join(os.path.join(os.environ['USERPROFILE']), 'Desktop')
+    shortcut_path = os.path.join(desktop, 'MyProgram.lnk')
+
+    # Создаем ярлык с помощью Windows Script Host
+    import pythoncom
+    import win32com.client
+
+    shell = win32com.client.Dispatch("WScript.Shell")
+    shortcut = shell.CreateShortCut(shortcut_path)
+    shortcut.TargetPath = os.path.join(install_dir, 'my_program.exe')  # Укажите имя вашего исполняемого файла
+    shortcut.WorkingDirectory = install_dir
+    shortcut.IconLocation = os.path.join(install_dir, 'my_program.ico')  # Укажите путь к иконке, если есть
+    shortcut.save()
+
+def select_install_directory():
+    # Открываем диалог выбора папки
+    install_dir = filedialog.askdirectory(title="Выберите папку для установки")
+    if install_dir:
+        install_program(install_dir)
+
+def main():
+    root = tk.Tk()
+    root.title("Установщик MyProgram")
+    root.geometry("300x150")
+
+    label = tk.Label(root, text="Нажмите кнопку для установки программы:")
+    label.pack(pady=20)
+
+    install_button = tk.Button(root, text="Выбрать папку и установить", command=select_install_directory)
+    install_button.pack(pady=10)
+
+    root.mainloop()
+
+if __name__ == "__main__":
+    main()
